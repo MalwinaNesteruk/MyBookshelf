@@ -1,0 +1,51 @@
+﻿table {
+    font-family: Arial, Verdana, sans-serif;
+    color: #111111;
+    font-size: 16px;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 7px 10px 10px 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 90%;
+    border-bottom: 2px solid #111111;
+}
+
+tr {
+    border: solid;
+    border-width: 1px 0;
+}
+
+/* Stylizacja dla kolumny "Opis" */
+    .scrollable-description {
+    max-height: 300px; /* Wysokość, po której pojawi się scroll */
+    overflow-y: auto;
+}
+
+    /* Opcjonalnie: zaokrąglone rogi dla scrolla w nowoczesnych przeglądarkach */
+.scrollable-description::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-description::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius: 4px;
+}
+
+.scrollable-description::-webkit-scrollbar-track {
+    background-color: #f4f4f4;
+}
+
+tr:hover { /*powoduje że po najechaniu myszką podświetla się wskazany wiersz*/
+    background-color: #ac5bf3;
+}
+
+

@@ -1,0 +1,88 @@
+﻿@model MyBookshelf.Models.Book
+
+<link href="~/css/formatting.css" type="text/css" rel="stylesheet" />
+
+<h1>Szczegóły wybranej pozycji</h1>
+
+<hr />
+
+<style type="text/css">
+
+    .book-container {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Odstęp między obrazkiem a tekstem */
+    }
+
+    .book-cover {
+        width: 150px; /* Szerokość okładki */
+        height: auto; /* Automatyczna wysokość */
+        border-radius: 5px; /* Zaokrąglenie rogów */
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* Cień */
+        margin-right: 50px;
+        margin-bottom: 50px;
+    }
+
+    .book-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .book-title {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .book-details {
+        font-size: 16px;
+        color: gray;
+        margin: 5px 0 0 0;
+        text-align: justify;
+    }
+
+    .btn:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        margin-top: 30px;
+    }
+
+</style>
+
+<div class="book-container">
+    <img src=@Model.ImageLink
+         class="book-cover">
+    <div class="book-info">
+        <h3 class="book-title">@Model.Title</h3>
+        <p class="book-details">@Model.Authors</p>
+        <p class="book-details">Data publikacji: @Model.PublishedDate</p>
+        <p class="book-details">Ilość stron: @Model.PageCount</p>
+        <p class="book-details">Wydawca: @Model.Publisher</p>
+        <p class="book-details">Cena: @Model.Price</p>
+    </div>
+</div>
+<div>
+    <p class="book-details">Rodzaj wydruku: @Model.PrintType</p>
+    @if (Model.FormatAvailable is not null)
+    {
+        <p class="book-details">
+            Dostępność:
+            @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
+            {
+                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("epub"))" target="_blank">EPUB</a>
+            }
+
+            @if (Model.FormatAvailable.Any(link => link.Contains("pdf", StringComparison.OrdinalIgnoreCase)))
+            {
+                @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <text>, </text>
+                }
+                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("pdf"))" target="_blank">PDF</a>
+            }
+        </p>
+    }
+    <p class="book-details">@Model.Description</p>
+</div>

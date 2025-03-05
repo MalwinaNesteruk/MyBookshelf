@@ -1,0 +1,97 @@
+﻿@model MyBookshelf.Models.ListingResponse
+
+<link href="~/css/formatting.css" type="text/css" rel="stylesheet" />
+
+<h1>Wyszukiwanie książek</h1>
+
+<hr />
+
+<style type="text/css">
+
+    .btn:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        margin-top: 30px;
+    }
+
+    .form-control {
+        margin-bottom: 5px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+    }
+
+    input {
+        margin-right: 10px; /* Przerwa między input a button */
+    }
+
+    .form1-group {
+        display: flex; /* Użycie flexbox */
+        justify-content: flex-end; /* Wyrównanie elementów do prawej */
+        margin-bottom: 25px;
+    }
+
+</style>
+
+<div class="row" id="row">
+    <form asp-action="SearchBookBase" method="post">
+        <div class="form-group">
+            <input class="form-control" name="query" placeholder="Wyszukiwana fraza" value="@ViewBag.Query" />
+            <button class="btn btn-default" type="submit" name="btn">Wyszukaj</button>
+            <link href="~/css/table.css" type="text/css" rel="stylesheet" />
+        </div>
+    </form>
+
+    <form asp-action="AdvancedSearchBookForm" method="get">
+        <div class="form1-group">
+            <button class="btn btn-default" name="btn">Wyszukiwanie zaawansowane</button>
+        </div>
+    </form>
+
+    @if (Model.errorMessage is not null)
+    {
+        <label class="control-label">@Model.errorMessage</label>
+    }
+
+    @if (Model.books is not null && Model.books.Count == 0)
+    {
+        <label class="control-label">Brak wyszukań</label>
+    }
+    else if (Model.books is not null && Model.books.Count > 0)
+    {
+        <table>
+            <tr>
+                <th style="width: 15%;">Tytuł</th>
+                <th style="width: 15%;">Autorzy</th>
+                <th style="width: 10%;">Data publikacji</th>
+                <th style="width: 10%;">Ilość stron</th>
+                <th style="width: 10%;">Wydawca</th>
+                <th style="width: 10%;">Format</th>
+                <th style="width: 30%;">Opis</th>
+            </tr>
+
+            @foreach (var book in Model.books)
+            {
+                <tr onclick="window.location='@Url.Action("BookDetails", "Book", book)';" style="cursor: pointer;">
+                    <td>@book.Title</td>
+                    <td>@book.Authors</td>
+                    <td>@book.PublishedDate</td>
+                    <td>@book.PageCount</td>
+                    <td>@book.Publisher</td>
+                    <td>@book.PrintType</td>
+                    <td>
+                        <div class="scrollable-description">
+                        @book.Description
+                        </div>
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    
+</div>
