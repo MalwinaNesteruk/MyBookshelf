@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MyBookshelf.Models;
 using MyBookshelf.Services;
 using MyBookshelf.Services.Interfaces;
 
@@ -12,6 +15,10 @@ namespace MyBookshelf
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IGoogleSearchService, GoogleSearchService>();
+            builder.Services.AddDbContext<DbBookshelf>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DbBookshelf>().AddDefaultTokenProviders();
+
 
             var app = builder.Build();
 
@@ -27,7 +34,7 @@ namespace MyBookshelf
             app.UseStaticFiles();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MyBookshelf.Models;
 using MyBookshelf.Services.Interfaces;
 
@@ -13,6 +14,7 @@ namespace MyBookshelf.Controllers
             _googleSearchService = googleSearchService;
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult SearchBookForm(ListingResponse listing)
         {
@@ -34,6 +36,7 @@ namespace MyBookshelf.Controllers
             return View("SearchBookForm", response);
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult AdvancedSearchBookForm(ListingResponse listing)
         {
@@ -82,7 +85,6 @@ namespace MyBookshelf.Controllers
         [HttpGet]
         public IActionResult BookDetails(Book book)
         {
-            // poźniej trzeba będzie przekazywać booka
             return View(book);
         }
     }
