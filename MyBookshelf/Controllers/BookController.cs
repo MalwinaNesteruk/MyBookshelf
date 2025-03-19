@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using MyBookshelf.Models;
 using MyBookshelf.Services.Interfaces;
+using static System.Reflection.Metadata.BlobBuilder;
+using System.Drawing.Printing;
+using MyBookshelf.Services;
 
 namespace MyBookshelf.Controllers
 {
@@ -22,7 +25,7 @@ namespace MyBookshelf.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchBookBase(string query)
+        public IActionResult SearchBookBase(string query, int page = 1, int maxResults = 10)
         {
             ListingResponse response = new ListingResponse();
             if (query is null || query.Count() < 3)
@@ -30,9 +33,15 @@ namespace MyBookshelf.Controllers
                 response.errorMessage = "Wyszukiwana fraza musi mieć co najmniej 3 znaki.";
                 return View("SearchBookForm", response);
             }
-            List<Book> listBook = _googleSearchService.BaseSearch(query);
+            List<Book> listBook = _googleSearchService.BaseSearch(query, page, maxResults);
+            var totalResults = _googleSearchService.GetTotalResults(query);
             response.books = listBook;
+            response.CurrentPage = page;
+            response.PageSize = maxResults;
+            response.TotalResults = totalResults;
+            response.TotalPages = (int)Math.Ceiling((double)totalResults / maxResults);
             ViewBag.Query = query;
+            
             return View("SearchBookForm", response);
         }
 

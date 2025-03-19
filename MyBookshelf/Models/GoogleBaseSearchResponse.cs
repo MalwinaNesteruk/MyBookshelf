@@ -2,6 +2,7 @@
 {
     public class GoogleBaseSearchResponse
     {
+        public int TotalItems { get; set; }
         public List<Item> Items{ get; set; }
     }
 

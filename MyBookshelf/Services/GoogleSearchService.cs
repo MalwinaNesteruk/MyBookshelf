@@ -9,9 +9,10 @@ namespace MyBookshelf.Services
 {
     public class GoogleSearchService : IGoogleSearchService
     {
-        public List<Book> BaseSearch(string query)
+        public List<Book> BaseSearch(string query, int page = 1, int maxResults = 10)
         {
-            string url = $"https://www.googleapis.com/books/v1/volumes?q={query}";
+            int startIndex = (page - 1) * maxResults;
+            string url = $"https://www.googleapis.com/books/v1/volumes?q={query}&startIndex={startIndex}&maxResults={maxResults}";
             var client = new RestClient(url);
             var request = new RestRequest();
             var response = client.Execute(request, Method.Get);
@@ -57,6 +58,29 @@ namespace MyBookshelf.Services
             }
         }
 
+        public int GetTotalResults(string query)
+        {
+            string url = $"https://www.googleapis.com/books/v1/volumes?q=?{query}&maxResults=10"; // Pobieramy tylko 1 wynik, ale odczytujemy całkowitą liczbę wyników
+
+            var client = new RestClient(url);
+            var request = new RestRequest();
+            var response = client.Execute(request, Method.Get);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception("Nieprawidłowa odpowiedź API");
+            }
+
+            var contentJson = response.Content;
+            GoogleBaseSearchResponse googleResponse = JsonConvert.DeserializeObject<GoogleBaseSearchResponse>(contentJson);
+
+            if (googleResponse?.Items == null || googleResponse.Items.Count == 0)
+            {
+                return 0;
+            }
+
+            return Math.Min(googleResponse.TotalItems, 40);
+        }
 
         public List<Book> AdvancedSearch(string title, string autors, string publisher, string isbn)
         {

@@ -14,6 +14,23 @@
         padding: 10px 30px;
         font-size: 16px;
         margin-top: 30px;
+        border-radius: 5px;
+    }
+
+    .btn2:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        border-radius: 5px;
+    }
+
+    .btn2:disabled {
+        background-color: #808080;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        border-radius: 5px;
     }
 
     .form-control {
@@ -22,7 +39,6 @@
 
     .form-group {
         display: flex;
-        flex-direction: row;
         align-items: baseline;
     }
 
@@ -34,6 +50,22 @@
         display: flex; /* Użycie flexbox */
         justify-content: flex-end; /* Wyrównanie elementów do prawej */
         margin-bottom: 25px;
+    }
+
+    .centered-pagination {
+        display: flex;
+        justify-content: center; /* Centrowanie poziome */
+        align-items: center; /* Centrowanie pionowe */
+        gap: 10px;
+    }
+
+    .centered-pagination span {
+        text-align: center; /* Centrowanie wewnątrz span */
+        font-size: 16px;
+    }
+
+    table {
+        margin-bottom: 30px; /* Dodanie odstępu poniżej tabeli */
     }
 
 </style>
@@ -92,6 +124,15 @@
                 </tr>
             }
         </table>
+        <form asp-action="SearchBookBase" method="post" class="centered-pagination">
+            <input type="hidden" name="query" value="@ViewBag.Query" />
+            <button type="submit" name="page" value="@(@Model.CurrentPage - 1)" class="btn2 btn-secondary"
+            @(Model.CurrentPage == 1 ? "disabled" : "")>Poprzednia</button>
+            <span>Strona @Model.CurrentPage</span>
+            <button type="submit" name="page" value="@(@Model.CurrentPage + 1)" class="btn2 btn-primary"
+            @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")>Następna</button>
+        </form>
     }
     
 </div>
+
