@@ -79,17 +79,13 @@ namespace MyBookshelf.Controllers
                 return View("AdvancedSearchBookForm", response);
             }
 
-            List<Book> listBook = _googleSearchService.AdvancedSearch(title, autors, publisher, isbn, page, maxResults);
-            var totalResults = _googleSearchService.GetTotalResultsAdvanced(title, autors, publisher, isbn);
-            response.books = listBook;
+            response = _googleSearchService.AdvancedSearch(title, autors, publisher, isbn, page, maxResults);
             ViewBag.Title = title;
             ViewBag.Autors = autors;
             ViewBag.Publisher = publisher;
             ViewBag.Isbn = isbn;
             response.CurrentPage = page;
             response.PageSize = maxResults;
-           /* response.TotalResults = totalResults;
-            response.TotalPages = (int)Math.Ceiling((double)totalResults / maxResults);*/
             return View("AdvancedSearchBookForm", response);
         }
 

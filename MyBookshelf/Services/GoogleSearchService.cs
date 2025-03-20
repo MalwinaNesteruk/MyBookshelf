@@ -17,7 +17,7 @@ namespace MyBookshelf.Services
             List<Book> nextBooks = ReturnListBooks(query, page + 1);
 
             ListingResponse listingResponse = new ListingResponse() { books = books, nextBooks = nextBooks };
-            return listingResponse; 
+            return listingResponse;
         }
 
         private List<Book> ReturnListBooks(string query, int page, int maxResults = 10)
@@ -69,87 +69,16 @@ namespace MyBookshelf.Services
             }
         }
 
-
-/*        public int GetTotalResults(string query)
+        public ListingResponse AdvancedSearch(string title, string autors, string publisher, string isbn, int page = 1, int maxResults = 10)
         {
-            string url = $"https://www.googleapis.com/books/v1/volumes?q=?{query}&maxResults=10"; // Pobieramy tylko 1 wynik, ale odczytujemy całkowitą liczbę wyników
+            List<Book> books = ReturnListBooksAdvancedSearch(title, autors, publisher, isbn, page);
+            List<Book> nextBooks = ReturnListBooksAdvancedSearch(title, autors, publisher, isbn, page + 1);
 
-            var client = new RestClient(url);
-            var request = new RestRequest();
-            var response = client.Execute(request, Method.Get);
-
-            if (!response.IsSuccessful)
-            {
-                throw new Exception("Nieprawidłowa odpowiedź API");
-            }
-
-            var contentJson = response.Content;
-            GoogleBaseSearchResponse googleResponse = JsonConvert.DeserializeObject<GoogleBaseSearchResponse>(contentJson);
-
-            if (googleResponse?.Items == null || googleResponse.Items.Count == 0)
-            {
-                return 0;
-            }
-
-            return Math.Min(googleResponse.TotalItems, 40);
-        }*/
-
-        public int GetTotalResultsAdvanced(string title, string autors, string publisher, string isbn)
-        {
-            string query = "";
-
-            if (title != null)
-            {
-                query += $"intitle:{title}";
-            }
-            if (autors != null)
-            {
-                if (query != "")
-                {
-                    query += ",";
-                }
-                query += $"inauthor:{autors}";
-            }
-            if (publisher != null)
-            {
-                if (query != "")
-                {
-                    query += ",";
-                }
-                query += $"inpublisher:{publisher}";
-            }
-            if (isbn != null)
-            {
-                if (query != "")
-                {
-                    query += ",";
-                }
-                query += $"isbn:{isbn}";
-            }
-
-            string url = $"https://www.googleapis.com/books/v1/volumes?q=?{query}&maxResults=10"; // Pobieramy tylko 1 wynik, ale odczytujemy całkowitą liczbę wyników
-
-            var client = new RestClient(url);
-            var request = new RestRequest();
-            var response = client.Execute(request, Method.Get);
-
-            if (!response.IsSuccessful)
-            {
-                throw new Exception("Nieprawidłowa odpowiedź API");
-            }
-
-            var contentJson = response.Content;
-            GoogleBaseSearchResponse googleResponse = JsonConvert.DeserializeObject<GoogleBaseSearchResponse>(contentJson);
-
-            if (googleResponse?.Items == null || googleResponse.Items.Count == 0)
-            {
-                return 0;
-            }
-
-            return Math.Min(googleResponse.TotalItems, 40);
+            ListingResponse listingResponse = new ListingResponse() { books = books, nextBooks = nextBooks };
+            return listingResponse;
         }
 
-        public List<Book> AdvancedSearch(string title, string autors, string publisher, string isbn, int page = 1, int maxResults = 10)
+        private List<Book> ReturnListBooksAdvancedSearch(string title, string autors, string publisher, string isbn, int page = 1, int maxResults = 10)
         {
             int startIndex = (page - 1) * maxResults;
             string query = "";
@@ -213,7 +142,7 @@ namespace MyBookshelf.Services
                         ISBN = book.VolumeInfo.IndustryIdentifiers is not null && book.VolumeInfo.IndustryIdentifiers.Any(x => x.Type.Equals("ISBN_13"))
                         ? book.VolumeInfo.IndustryIdentifiers.FirstOrDefault(x => x.Type.Equals("ISBN_13"))?.Identifier ?? "brak danych"
                         : book.VolumeInfo.IndustryIdentifiers?.FirstOrDefault(x => x.Type.Equals("ISBN_10"))?.Identifier ?? "brak danych"
-                };
+                    };
                     listBook.Add(newBook);
                 }
                 return listBook;

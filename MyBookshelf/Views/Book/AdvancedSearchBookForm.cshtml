@@ -23,6 +23,8 @@
         padding: 10px 30px;
         font-size: 16px;
         border-radius: 5px;
+        border: none;
+        outline: none;
     }
 
     .btn2:disabled {
@@ -31,6 +33,8 @@
         padding: 10px 30px;
         font-size: 16px;
         border-radius: 5px;
+        border: none;
+        outline: none;
     }
 
     .form-control {
@@ -116,17 +120,20 @@
                 </tr>
             }
         </table>
-        <form asp-action="SearchBookBase" method="post" class="centered-pagination">
-            <input type="hidden" name="query" value="@ViewBag.Query" />
+        <form asp-action="SearchBookAdvanced" method="post" class="centered-pagination">
+            <input type="hidden" name="title" value="@ViewBag.Title" />
+            <input type="hidden" name="autors" value="@ViewBag.Autors" />
+            <input type="hidden" name="publisher" value="@ViewBag.Publisher" />
+            <input type="hidden" name="isbn" value="@ViewBag.Isbn" />
             <button type="submit" name="page" value="@(@Model.CurrentPage - 1)" class="btn2 btn-secondary"
             @(Model.CurrentPage == 1 ? "disabled" : "")>
                 Poprzednia
             </button>
             <span>Strona @Model.CurrentPage</span>
-            @* <button type="submit" name="page" value="@(@Model.CurrentPage + 1)" class="btn2 btn-primary"
-            @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")>
+            <button type="submit" name="page" value="@(@Model.CurrentPage + 1)" class="btn2 btn-primary"
+            @(Model.nextBooks.Count == 0 ? "disabled" : "")>
                 Następna
-            </button> *@
+            </button>
         </form>
     }
 
