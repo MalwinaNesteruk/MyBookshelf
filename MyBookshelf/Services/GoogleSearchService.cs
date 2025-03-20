@@ -1,15 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyBookshelf.Models;
 using MyBookshelf.Services.Interfaces;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace MyBookshelf.Services
+namespace MyBookshelf.Services  
 {
     public class GoogleSearchService : IGoogleSearchService
     {
-        public List<Book> BaseSearch(string query, int page = 1, int maxResults = 10)
+        public ListingResponse BaseSearch(string query, int page = 1, int maxResults = 10)
+        {
+            List<Book> books = ReturnListBooks(query, page);
+            List<Book> nextBooks = ReturnListBooks(query, page + 1);
+
+            ListingResponse listingResponse = new ListingResponse() { books = books, nextBooks = nextBooks };
+            return listingResponse; 
+        }
+
+        private List<Book> ReturnListBooks(string query, int page, int maxResults = 10)
         {
             int startIndex = (page - 1) * maxResults;
             string url = $"https://www.googleapis.com/books/v1/volumes?q={query}&startIndex={startIndex}&maxResults={maxResults}";
@@ -47,10 +58,10 @@ namespace MyBookshelf.Services
                                 book.AccessInfo.Epub.IsAvailable ? book.AccessInfo.Epub.AcsTokenLink : null,
                                 book.AccessInfo.Pdf.IsAvailable ? book.AccessInfo.Pdf.AcsTokenLink : null
                             }.Where(link => link != null).ToList()
-                };
+                    };
                     listBook.Add(newBook);
                 }
-                return listBook; 
+                return listBook;
             }
             else
             {
@@ -58,7 +69,8 @@ namespace MyBookshelf.Services
             }
         }
 
-        public int GetTotalResults(string query)
+
+/*        public int GetTotalResults(string query)
         {
             string url = $"https://www.googleapis.com/books/v1/volumes?q=?{query}&maxResults=10"; // Pobieramy tylko 1 wynik, ale odczytujemy całkowitą liczbę wyników
 
@@ -80,9 +92,9 @@ namespace MyBookshelf.Services
             }
 
             return Math.Min(googleResponse.TotalItems, 40);
-        }
+        }*/
 
-        public List<Book> AdvancedSearch(string title, string autors, string publisher, string isbn)
+        public int GetTotalResultsAdvanced(string title, string autors, string publisher, string isbn)
         {
             string query = "";
 
@@ -115,7 +127,63 @@ namespace MyBookshelf.Services
                 query += $"isbn:{isbn}";
             }
 
-            string url = $"https://www.googleapis.com/books/v1/volumes?q={query}";
+            string url = $"https://www.googleapis.com/books/v1/volumes?q=?{query}&maxResults=10"; // Pobieramy tylko 1 wynik, ale odczytujemy całkowitą liczbę wyników
+
+            var client = new RestClient(url);
+            var request = new RestRequest();
+            var response = client.Execute(request, Method.Get);
+
+            if (!response.IsSuccessful)
+            {
+                throw new Exception("Nieprawidłowa odpowiedź API");
+            }
+
+            var contentJson = response.Content;
+            GoogleBaseSearchResponse googleResponse = JsonConvert.DeserializeObject<GoogleBaseSearchResponse>(contentJson);
+
+            if (googleResponse?.Items == null || googleResponse.Items.Count == 0)
+            {
+                return 0;
+            }
+
+            return Math.Min(googleResponse.TotalItems, 40);
+        }
+
+        public List<Book> AdvancedSearch(string title, string autors, string publisher, string isbn, int page = 1, int maxResults = 10)
+        {
+            int startIndex = (page - 1) * maxResults;
+            string query = "";
+
+            if (title != null)
+            {
+                query += $"intitle:{title}";
+            }
+            if (autors != null)
+            {
+                if (query != "")
+                {
+                    query += ",";
+                }
+                query += $"inauthor:{autors}";
+            }
+            if (publisher != null)
+            {
+                if (query != "")
+                {
+                    query += ",";
+                }
+                query += $"inpublisher:{publisher}";
+            }
+            if (isbn != null)
+            {
+                if (query != "")
+                {
+                    query += ",";
+                }
+                query += $"isbn:{isbn}";
+            }
+
+            string url = $"https://www.googleapis.com/books/v1/volumes?q={query}&startIndex={startIndex}&maxResults={maxResults}";
             var client = new RestClient(url);
             var request = new RestRequest();
             var response = client.Execute(request, Method.Get);
@@ -155,6 +223,5 @@ namespace MyBookshelf.Services
                 throw new Exception("Nieprawidłowa odpowiedź API");
             }
         }
-
     }
 }

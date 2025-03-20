@@ -107,7 +107,7 @@
                 <th style="width: 30%;">Opis</th>
             </tr>
 
-            @foreach (var book in Model.books)
+            @foreach (var book in Model.books.Take(10))
             {
                 <tr onclick="window.location='@Url.Action("BookDetails", "Book", book)';" style="cursor: pointer;">
                     <td>@book.Title</td>
@@ -130,7 +130,7 @@
             @(Model.CurrentPage == 1 ? "disabled" : "")>Poprzednia</button>
             <span>Strona @Model.CurrentPage</span>
             <button type="submit" name="page" value="@(@Model.CurrentPage + 1)" class="btn2 btn-primary"
-            @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")>Następna</button>
+            @(Model.nextBooks.Count == 0 ? "disabled" : "")>Następna</button>
         </form>
     }
     

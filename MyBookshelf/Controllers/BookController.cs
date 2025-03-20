@@ -5,6 +5,8 @@ using MyBookshelf.Services.Interfaces;
 using static System.Reflection.Metadata.BlobBuilder;
 using System.Drawing.Printing;
 using MyBookshelf.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MyBookshelf.Controllers
 {
@@ -33,15 +35,10 @@ namespace MyBookshelf.Controllers
                 response.errorMessage = "Wyszukiwana fraza musi mieć co najmniej 3 znaki.";
                 return View("SearchBookForm", response);
             }
-            List<Book> listBook = _googleSearchService.BaseSearch(query, page, maxResults);
-            var totalResults = _googleSearchService.GetTotalResults(query);
-            response.books = listBook;
+            response = _googleSearchService.BaseSearch(query, page, maxResults);
             response.CurrentPage = page;
             response.PageSize = maxResults;
-            response.TotalResults = totalResults;
-            response.TotalPages = (int)Math.Ceiling((double)totalResults / maxResults);
             ViewBag.Query = query;
-            
             return View("SearchBookForm", response);
         }
 
@@ -53,7 +50,7 @@ namespace MyBookshelf.Controllers
         }
 
         [HttpPost]
-        public IActionResult SearchBookAdvanced(string title, string autors, string publisher, string isbn)
+        public IActionResult SearchBookAdvanced(string title, string autors, string publisher, string isbn, int page = 1, int maxResults = 10)
         {
             ListingResponse response = new ListingResponse();
             if (title is null && autors is null && publisher is null && isbn is null)
@@ -82,12 +79,17 @@ namespace MyBookshelf.Controllers
                 return View("AdvancedSearchBookForm", response);
             }
 
-            List<Book> listBook = _googleSearchService.AdvancedSearch(title, autors, publisher, isbn);
+            List<Book> listBook = _googleSearchService.AdvancedSearch(title, autors, publisher, isbn, page, maxResults);
+            var totalResults = _googleSearchService.GetTotalResultsAdvanced(title, autors, publisher, isbn);
             response.books = listBook;
             ViewBag.Title = title;
             ViewBag.Autors = autors;
             ViewBag.Publisher = publisher;
             ViewBag.Isbn = isbn;
+            response.CurrentPage = page;
+            response.PageSize = maxResults;
+           /* response.TotalResults = totalResults;
+            response.TotalPages = (int)Math.Ceiling((double)totalResults / maxResults);*/
             return View("AdvancedSearchBookForm", response);
         }
 
