@@ -53,6 +53,7 @@
         padding: 10px; /* Wewnętrzny odstęp */
         overflow: auto; /* Włączenie scrolla, gdy tekst jest za długi */
         background-color: #F0F8FF; /* Jasne tło dla lepszej czytelności */
+        margin-bottom: 75px;
     }
     
     .about-me {
@@ -60,6 +61,53 @@
         font-weight: bold;
         margin: 0;
     }
+
+    .tab-container {
+        width: 1300px;
+        margin: auto;
+    }
+
+    .tab-header {
+        display: flex;
+    }
+
+    .tab-button {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-size: 20px;
+        flex: 1;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+    }
+
+    .tab-button.active {
+        font-size: 22px;
+        background: #0096FF;
+        border: none;
+        font-weight: bold;
+    }
+
+    .tab-content {
+        border: 1px solid #0096FF;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        padding: 10px;
+        height: 100px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+
+
+
+
 
 /*     .btn:enabled {
         background-color: #0096FF;
@@ -87,8 +135,8 @@
 
 <div class="tab-container">
     <div class="tab-header">
-        <button class="tab-button active" onclick="openTab(event, 'tab1')">Zakładka 1</button>
-        <button class="tab-button" onclick="openTab(event, 'tab2')">Zakładka 2</button>
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">Ocenione</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Ulubione</button>
     </div>
     <div class="tab-content">
         <div id="tab1" class="tab-pane active">Treść zakładki 1</div>

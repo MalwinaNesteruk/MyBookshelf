@@ -25,6 +25,7 @@
 
     .book-info {
         display: flex;
+        width:650px;
         flex-direction: column;
     }
 
@@ -33,6 +34,7 @@
         font-weight: bold;
         margin: 0;
     }
+
 
     .book-details {
         font-size: 16px;
@@ -49,6 +51,52 @@
         margin-top: 30px;
     }
 
+    .note-container {
+        margin-left: 75px;
+        text-align: center;
+        width: 300px;
+    }
+
+    .evaluation,
+    .favourites {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .rating {
+        font-size: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .star {
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.3s;
+        font-size: 40px;
+    }
+
+    .star:hover,
+    .star.hovered,
+    .star.active {
+        color: gold; 
+    }
+
+    .note {
+        font-size: 22px;
+        color: black;
+        text-align: center;
+    }
+
+    .heart-button {
+        font-size: 40px; 
+        background: none;
+        border: none; 
+        cursor: pointer; 
+        padding: 0; 
+    }
+
 </style>
 
 <div class="book-container">
@@ -61,6 +109,21 @@
         <p class="book-details">Ilość stron: @Model.PageCount</p>
         <p class="book-details">Wydawca: @Model.Publisher</p>
         <p class="book-details">Cena: @Model.Price</p>
+    </div>
+    <div class="note-container">
+        <p class="evaluation">OCEŃ</p>
+        <div class="rating">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <p class ="note"><span id="rating-value">0</span>/5</p>
+        <p class="favourites">DODAJ DO ULUBIONYCH</p>
+        <button class="heart-button" onclick="toggleFavorite(this)">
+            🤍
+        </button>
     </div>
 </div>
 <div>
@@ -86,3 +149,58 @@
     }
     <p class="book-details">@Model.Description</p>
 </div>
+
+<script>
+    const stars = document.querySelectorAll(".star");
+    const ratingValue = document.getElementById("rating-value");
+    let currentRating = 0;
+
+    stars.forEach(star => {
+        star.addEventListener("mouseover", function () {
+            resetStars();
+            this.classList.add("hovered");
+            let prev = this.previousElementSibling;
+            while (prev) {
+                prev.classList.add("hovered");
+                prev = prev.previousElementSibling;
+            }
+        });
+
+        star.addEventListener("mouseout", function () {
+            resetStars();
+            setStars(currentRating);
+        });
+
+        star.addEventListener("click", function () {
+            currentRating = this.getAttribute("data-value");
+            ratingValue.textContent = currentRating;
+            setStars(currentRating);
+        });
+    });
+
+    function resetStars() {
+        stars.forEach(star => star.classList.remove("hovered", "active"));
+    }
+
+    function setStars(rating) {
+        stars.forEach(star => {
+            if (star.getAttribute("data-value") <= rating) {
+                star.classList.add("active");
+            }
+        });
+    }
+</script>
+
+<script>
+    function toggleFavorite(button) {
+        var textElement = document.querySelector(".favourites");
+
+        if (button.innerText === "🤍") {
+            button.innerText = "❤️";
+            textElement.innerText = "DODANO DO ULUBIONYCH";
+        } else {
+            button.innerText = "🤍";
+            textElement.innerText = "DODAJ DO ULUBIONYCH";
+        }
+    }
+</script>
