@@ -1,0 +1,148 @@
+﻿@model MyBookshelf.Models.User
+
+<link href="~/css/formatting.css" type="text/css" rel="stylesheet" />
+
+<h1>Profil użytkownika</h1>
+
+<hr />
+
+<style type="text/css">
+
+    .user-container {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Odstęp między obrazkiem a tekstem */
+        margin-bottom: 20px;
+    }
+
+    .user-cover {
+        width: 150px; /* Szerokość okładki */
+        height: auto; /* Automatyczna wysokość */
+        border-radius: 5px; /* Zaokrąglenie rogów */
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* Cień */
+        margin-right: 50px;
+        margin-bottom: 50px;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .username {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .details {
+        font-size: 16px;
+        color: gray;
+        margin: 5px 0 0 0;
+        text-align: justify;
+    }
+
+    .description {
+        margin-top: 5px;
+        font-size: 16px;
+        color: black;
+        width: 800px; /* Szerokość ramki */
+        height: 150px; /* Wysokość ramki */
+        border: 4px dotted #0096FF; /* Czarna ramka */
+        border-radius: 10px;
+        padding: 10px; /* Wewnętrzny odstęp */
+        overflow: auto; /* Włączenie scrolla, gdy tekst jest za długi */
+        background-color: #F0F8FF; /* Jasne tło dla lepszej czytelności */
+    }
+    
+    .about-me {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+/*     .btn:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        margin-top: 30px;
+    } */
+
+</style>
+
+<div class="user-container">
+    <img src="https://vitapol.pl/wp-content/uploads/2024/02/krolik.png"
+         class="user-cover">
+    <div class="user-info">
+        <h3 class="username">pierdzibrzdek</h3>
+        <p class="details">malwinanes@go2.pl</p>
+        <p class="details">obserwowani: 8, obserwujący: 1</p>
+    </div>
+</div>
+<div>
+    <p class="about-me">O sobie</p>
+    <p class="description">dnskgl dsfvg sdk jzjgvn sdkz jvgn db sdfdnd sjkndkf sfnkjsdz sadksn NFvdjks asjkdf </p>
+</div>
+
+<div class="tab-container">
+    <div class="tab-header">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">Zakładka 1</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Zakładka 2</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">Treść zakładki 1</div>
+        <div id="tab2" class="tab-pane">Treść zakładki 2</div>
+    </div>
+</div>
+
+<script>
+    function openTab(event, tabId) {
+        let buttons = document.querySelectorAll(".tab-button");
+        let tabs = document.querySelectorAll(".tab-pane");
+
+        buttons.forEach(button => button.classList.remove("active"));
+        tabs.forEach(tab => tab.classList.remove("active"));
+
+        event.currentTarget.classList.add("active");
+        document.getElementById(tabId).classList.add("active");
+    }
+</script>
+
+
+
+@* <div class="book-container">
+    <img src=@Model.ImageLink
+         class="book-cover">
+    <div class="book-info">
+        <h3 class="book-title">@Model.Title</h3>
+        <p class="book-details">@Model.Authors</p>
+        <p class="book-details">Data publikacji: @Model.PublishedDate</p>
+        <p class="book-details">Ilość stron: @Model.PageCount</p>
+        <p class="book-details">Wydawca: @Model.Publisher</p>
+        <p class="book-details">Cena: @Model.Price</p>
+    </div>
+</div>
+<div>
+    <p class="book-details">Rodzaj wydruku: @Model.PrintType</p>
+    @if (Model.FormatAvailable is not null)
+    {
+        <p class="book-details">
+            Dostępność:
+            @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
+            {
+                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("epub"))" target="_blank">EPUB</a>
+            }
+
+            @if (Model.FormatAvailable.Any(link => link.Contains("pdf", StringComparison.OrdinalIgnoreCase)))
+            {
+                @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
+                {
+                    <text>, </text>
+                }
+                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("pdf"))" target="_blank">PDF</a>
+            }
+        </p>
+    }
+    <p class="book-details">@Model.Description</p>
+</div> *@
