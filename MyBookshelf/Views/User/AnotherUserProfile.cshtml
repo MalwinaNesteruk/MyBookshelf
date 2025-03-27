@@ -1,0 +1,153 @@
+﻿@model MyBookshelf.Models.User
+
+<link href="~/css/formatting.css" type="text/css" rel="stylesheet" />
+
+<h1>Profil użytkownika</h1>
+
+<hr />
+
+<style type="text/css">
+
+    .user-container {
+        display: flex;
+        align-items: center;
+        gap: 15px; /* Odstęp między obrazkiem a tekstem */
+        margin-bottom: 20px;
+    }
+
+    .user-cover {
+        width: 150px; /* Szerokość okładki */
+        height: auto; /* Automatyczna wysokość */
+        border-radius: 5px; /* Zaokrąglenie rogów */
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* Cień */
+        margin-right: 50px;
+        margin-bottom: 50px;
+    }
+
+    .user-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .username {
+        font-size: 26px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .details {
+        font-size: 16px;
+        color: gray;
+        margin: 5px 0 0 0;
+        text-align: justify;
+    }
+
+    .description {
+        margin-top: 5px;
+        font-size: 16px;
+        color: black;
+        width: 800px; /* Szerokość ramki */
+        height: 150px; /* Wysokość ramki */
+        border: 4px dotted #0096FF; /* Czarna ramka */
+        border-radius: 10px;
+        padding: 10px; /* Wewnętrzny odstęp */
+        overflow: auto; /* Włączenie scrolla, gdy tekst jest za długi */
+        background-color: #F0F8FF; /* Jasne tło dla lepszej czytelności */
+        margin-bottom: 75px;
+    }
+
+    .about-me {
+        font-size: 22px;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .tab-container {
+        width: 1300px;
+        margin: auto;
+    }
+
+    .tab-header {
+        display: flex;
+    }
+
+    .tab-button {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+        font-size: 20px;
+        flex: 1;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+    }
+
+        .tab-button.active {
+            font-size: 22px;
+            background: #0096FF;
+            border: none;
+            font-weight: bold;
+        }
+
+    .tab-content {
+        border: 1px solid #0096FF;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        padding: 10px;
+        height: 100px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+    /*     .btn:enabled {
+            background-color: #0096FF;
+            color: #FFFFFF;
+            padding: 10px 30px;
+            font-size: 16px;
+            margin-top: 30px;
+        } */
+
+</style>
+
+<div class="user-container">
+    <img src=@Model.ImageLink
+         class="user-cover">
+    <div class="user-info">
+        <h3 class="username">@Model.UserName</h3>
+        <p class="details">@Model.Email</p>
+        <p class="details">obserwowani: 8, obserwujący: 1</p>
+    </div>
+</div>
+<div>
+    <p class="about-me">O sobie</p>
+    <p class="description">@Model.Description</p>
+</div>
+
+<div class="tab-container">
+    <div class="tab-header">
+        <button class="tab-button active" onclick="openTab(event, 'tab1')">Ocenione</button>
+        <button class="tab-button" onclick="openTab(event, 'tab2')">Ulubione</button>
+    </div>
+    <div class="tab-content">
+        <div id="tab1" class="tab-pane active">Treść zakładki 1</div>
+        <div id="tab2" class="tab-pane">Treść zakładki 2</div>
+    </div>
+</div>
+
+<script>
+    function openTab(event, tabId) {
+        let buttons = document.querySelectorAll(".tab-button");
+        let tabs = document.querySelectorAll(".tab-pane");
+
+        buttons.forEach(button => button.classList.remove("active"));
+        tabs.forEach(tab => tab.classList.remove("active"));
+
+        event.currentTarget.classList.add("active");
+        document.getElementById(tabId).classList.add("active");
+    }
+</script>

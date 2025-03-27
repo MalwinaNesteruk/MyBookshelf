@@ -11,17 +11,47 @@
     .user-container {
         display: flex;
         align-items: center;
-        gap: 15px; /* Odstęp między obrazkiem a tekstem */
-        margin-bottom: 20px;
+        gap: 50px; /* Odstęp między obrazkiem a tekstem */
+        margin-bottom: 75px;
+    }
+    
+    .user-container2 {
+        display: flex;
+        align-items: center;
+        gap: 50px; /* Odstęp między obrazkiem a tekstem */
+        margin-bottom: 10px;
+    }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
     }
 
     .user-cover {
-        width: 150px; /* Szerokość okładki */
-        height: auto; /* Automatyczna wysokość */
+        width: 200px; /* Szerokość okładki */
+        height: 200px; /* Automatyczna wysokość */
         border-radius: 5px; /* Zaokrąglenie rogów */
         box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* Cień */
-        margin-right: 50px;
-        margin-bottom: 50px;
+
+        object-fit: cover;
+    }
+
+    .change-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: black;
+        font-size: 20px;
+        font-weight: bold;
+        background-color: yellow; /* Żółte tło */
+        padding: 10px 20px; /* Dodanie marginesu wokół tekstu */
+        border-radius: 5px; /* Zaokrąglone rogi */
+        display: none;
+    }
+
+    .image-container:hover .change-text {
+        display: block; /* Pokazuje tekst "Zmień" po najechaniu na obrazek */
     }
 
     .user-info {
@@ -47,12 +77,13 @@
         font-size: 16px;
         color: black;
         width: 800px; /* Szerokość ramki */
-        height: 150px; /* Wysokość ramki */
+        height: 300px; /* Wysokość ramki */
         border: 4px dotted #0096FF; /* Czarna ramka */
         border-radius: 10px;
         padding: 10px; /* Wewnętrzny odstęp */
         overflow: auto; /* Włączenie scrolla, gdy tekst jest za długi */
         background-color: #F0F8FF; /* Jasne tło dla lepszej czytelności */
+        text-align: justify;
         margin-bottom: 75px;
     }
     
@@ -60,6 +91,7 @@
         font-size: 22px;
         font-weight: bold;
         margin: 0;
+        line-height: 40px;
     }
 
     .tab-container {
@@ -104,33 +136,46 @@
         display: block;
     }
 
-
-
-
-
-
-/*     .btn:enabled {
+    .btn-normal {
         background-color: #0096FF;
         color: #FFFFFF;
         padding: 10px 30px;
         font-size: 16px;
-        margin-top: 30px;
-    } */
+        height: 40px; /* Ustaw identyczną wysokość dla równego wyrównania */
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-editing {
+        background-color: #DAA520;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        height: 40px; /* Ustaw identyczną wysokość dla równego wyrównania */
+        display: flex;
+        align-items: center;
+    }
 
 </style>
 
 <div class="user-container">
-    <img src="https://vitapol.pl/wp-content/uploads/2024/02/krolik.png"
-         class="user-cover">
+    <div class="image-container">
+        <img src="@Url.Content("~/imagesUser/" + Model.ImageLink)" class="user-cover" id="userImage" />
+        <span class="change-text" id="changeText">Zmień</span>
+        <input type="file" id="fileInput" style="display: none;" accept="image/*" />
+    </div>
     <div class="user-info">
-        <h3 class="username">pierdzibrzdek</h3>
-        <p class="details">malwinanes@go2.pl</p>
+        <h3 class="username">@Model.UserName</h3>
+        <p class="details">@Model.Email</p>
         <p class="details">obserwowani: 8, obserwujący: 1</p>
     </div>
 </div>
 <div>
-    <p class="about-me">O sobie</p>
-    <p class="description">dnskgl dsfvg sdk jzjgvn sdkz jvgn db sdfdnd sjkndkf sfnkjsdz sadksn NFvdjks asjkdf </p>
+    <div class="user-container2">
+        <p class="about-me">O sobie</p>
+        <button class="btn" name="btn" id="edit-btn">Zmień</button>
+    </div>
+    <p class="description" id="description-text">@Model.Description</p>
 </div>
 
 <div class="tab-container">
@@ -157,40 +202,111 @@
     }
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const editButton = document.getElementById("edit-btn");
+        let isEditing = false;
 
+        editButton.addEventListener("click", function () {
+            let descriptionText = document.getElementById("description-text");
 
-@* <div class="book-container">
-    <img src=@Model.ImageLink
-         class="book-cover">
-    <div class="book-info">
-        <h3 class="book-title">@Model.Title</h3>
-        <p class="book-details">@Model.Authors</p>
-        <p class="book-details">Data publikacji: @Model.PublishedDate</p>
-        <p class="book-details">Ilość stron: @Model.PageCount</p>
-        <p class="book-details">Wydawca: @Model.Publisher</p>
-        <p class="book-details">Cena: @Model.Price</p>
-    </div>
-</div>
-<div>
-    <p class="book-details">Rodzaj wydruku: @Model.PrintType</p>
-    @if (Model.FormatAvailable is not null)
-    {
-        <p class="book-details">
-            Dostępność:
-            @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
-            {
-                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("epub"))" target="_blank">EPUB</a>
+            if (!isEditing) {
+                // Zamiana <p> na <textarea>
+                const textarea = document.createElement("textarea");
+                textarea.id = "description-text";
+                textarea.className = "description";
+                textarea.value = descriptionText.innerText;
+
+                descriptionText.replaceWith(textarea);
+
+                editButton.innerText = "Zapisz";
+                editButton.classList.remove("btn-normal");
+                editButton.classList.add("btn-editing");
+
+                isEditing = true;
+            } else {
+                // Zamiana <textarea> na <p>
+                const textarea = document.getElementById("description-text");
+
+                const newText = document.createElement("p");
+                newText.id = "description-text";
+                newText.className = "description";
+                newText.innerText = textarea.value;
+
+                // TODO zapisywanie
+                $.ajax({
+                    url: '/User/UpdateDescription', // Upewnij się, że ścieżka jest poprawna
+                    type: 'POST',
+                    contentType: 'application/json', // Określamy, że wysyłamy JSON
+                    data: JSON.stringify({ description: textarea.value }), // Przesyłamy tekst w formacie JSON
+                    success: function (response) {
+                        alert(response.message); // Pokazuje komunikat po udanym zapisaniu
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Wystąpił błąd: " + error); // Komunikat w przypadku błędu
+                    }
+                });
+                //end
+                textarea.replaceWith(newText);
+
+                editButton.innerText = "Zmień";
+                editButton.classList.remove("btn-editing");
+                editButton.classList.add("btn-normal");
+
+                isEditing = false;
             }
+        });
 
-            @if (Model.FormatAvailable.Any(link => link.Contains("pdf", StringComparison.OrdinalIgnoreCase)))
-            {
-                @if (Model.FormatAvailable.Any(link => link.Contains("epub", StringComparison.OrdinalIgnoreCase)))
-                {
-                    <text>, </text>
-                }
-                <a href="@Model.FormatAvailable.FirstOrDefault(link => link.Contains("pdf"))" target="_blank">PDF</a>
+        // Ustawienie początkowego koloru przycisku
+        editButton.classList.add("btn-normal");
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const imageElement = document.getElementById("userImage");
+        const fileInput = document.getElementById("fileInput");
+        const changeText = document.getElementById("changeText");
+
+        // Funkcja otwierająca okno wyboru pliku po kliknięciu na obrazek lub tekst "Zmień"
+        function openFileInput() {
+            fileInput.click();  // Otwiera ukryte pole do wyboru pliku
+        }
+
+        // Dodanie event listenerów dla kliknięcia na obrazek oraz na tekst "Zmień"
+        imageElement.addEventListener("click", openFileInput);
+        changeText.addEventListener("click", openFileInput);
+
+        // Po wybraniu pliku przez użytkownika, zaktualizuj obrazek
+        fileInput.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    // Ustawiamy nowy obrazek w tagu <img>
+                    imageElement.src = e.target.result;
+
+                    // Prześlij plik na serwer, aby go zapisać
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    fetch("/User/UploadImage", {
+                        method: "POST",
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert("Obrazek został zmieniony.");
+                        })
+                        .catch(error => {
+                            alert("Wystąpił błąd przy wysyłaniu obrazu.");
+                        });
+                };
+
+                reader.readAsDataURL(file);  // Wczytaj plik jako DataURL (do wyświetlenia)
             }
-        </p>
-    }
-    <p class="book-details">@Model.Description</p>
-</div> *@
+        });
+    });
+</script>

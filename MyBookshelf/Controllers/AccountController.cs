@@ -1,6 +1,7 @@
 ﻿namespace MyBookshelf.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MyBookshelf.Models;
 using System.Threading.Tasks;
 
 public class AccountController : Controller
@@ -40,7 +41,7 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(string email, string password)
     {
-        var user = new IdentityUser { UserName = email, Email = email };
+        var user = new User { UserName = email, Email = email };
         var result = await _userManager.CreateAsync(user, password);
 
         if (result.Succeeded)

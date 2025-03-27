@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MyBookshelf.Models;
 
 namespace MyBookshelf
 {
-    public class DbBookshelf : IdentityDbContext
+    public class UserDbContext : IdentityDbContext<User>
     {
-        public DbBookshelf(DbContextOptions<DbBookshelf> options) : base(options)
+        public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
         {
 
         }

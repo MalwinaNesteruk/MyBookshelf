@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBookshelf.Models
 {
+    [Table("Books")]
     public class Book
     {
+        [Key]
         public string Id { get; set; }
         public string Title { get; set; }
         public string Authors { get; set; }

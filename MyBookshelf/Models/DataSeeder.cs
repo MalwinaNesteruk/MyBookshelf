@@ -7,7 +7,7 @@ namespace MyBookshelf.Models
         public static async Task SeedRolesAndAdminAsync(IServiceProvider serviceProvider)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
 
             string[] roleNames = { "admin", "user" };
             foreach (var roleName in roleNames)
@@ -24,7 +24,7 @@ namespace MyBookshelf.Models
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {
-                var newAdmin = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
+                var newAdmin = new User { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
                 var result = await userManager.CreateAsync(newAdmin, adminPassword);
                 if (result.Succeeded)
                 {

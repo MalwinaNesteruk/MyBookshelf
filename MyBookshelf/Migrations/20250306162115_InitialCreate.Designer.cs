@@ -11,7 +11,7 @@ using MyBookshelf;
 
 namespace MyBookshelf.Migrations
 {
-    [DbContext(typeof(DbBookshelf))]
+    [DbContext(typeof(UserDbContext))]
     [Migration("20250306162115_InitialCreate")]
     partial class InitialCreate
     {

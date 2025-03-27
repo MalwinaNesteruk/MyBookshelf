@@ -15,10 +15,11 @@ namespace MyBookshelf
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<IGoogleSearchService, GoogleSearchService>();
-            builder.Services.AddDbContext<DbBookshelf>(options =>
+            builder.Services.AddDbContext<UserDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<DbBookshelf>().AddDefaultTokenProviders();
-
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserDbContext>().AddDefaultTokenProviders();
 
             var app = builder.Build();
 
