@@ -1,10 +1,66 @@
-﻿@{
-    ViewData["Title"] = "Logowanie";
-}
+﻿@model MyBookshelf.Models.DataSeeder
 
-<h2>Logowanie</h2>
+<link href="~/css/formatting.css" type="text/css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+<h1>Logowanie</h1>
+
+<hr />
+
+<style type="text/css">
+
+    .form-control {
+        margin-bottom: 5px;
+    }
+
+    .form-group {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        width: 700px;
+    }
+
+    .btn:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        margin-top: 30px;
+    }
+
+    .toggle-password {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #0096FF;
+        font-size: 16px;
+    }
+
+</style>
+
 <form method="post">
-    <input type="email" name="email" placeholder="Email" required />
-    <input type="password" name="password" placeholder="Hasło" required />
-    <button type="submit">Zaloguj</button>
+    <div class="form-group">
+        <input class="form-control" type="email" name="email" placeholder="Email" required />
+        <input class="form-control" id="password"  type="password" name="password" placeholder="Hasło" required />
+        <button type="button" class="toggle-password" onclick="togglePassword()">
+            <i class="fas fa-eye"></i>
+        </button>
+        <button class="btn btn-default" type="submit">Zaloguj</button>
+    </div>
 </form>
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById("password");  
+        const passwordToggleButton = document.querySelector(".toggle-password");  
+
+        if (passwordField.type === "password") {
+            passwordField.type = "text";  
+            passwordToggleButton.innerHTML = '<i class="fas fa-eye-slash"></i>'; 
+        } else {
+            passwordField.type = "password"; 
+            passwordToggleButton.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    }
+</script>

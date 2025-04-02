@@ -1,0 +1,9 @@
+﻿@model MyBookshelf.Models.UserSearchResponse
+
+@foreach (var user in Model.Users)
+{
+    <div class="user-card">
+        <img src="@Url.Content("~/imagesUser/" + user.ImageLink)" alt="Zdjęcie profilowe" class="profile-img">
+        <p>@user.UserName</p>
+    </div>
+}

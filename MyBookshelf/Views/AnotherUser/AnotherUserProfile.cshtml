@@ -11,17 +11,16 @@
     .user-container {
         display: flex;
         align-items: center;
-        gap: 15px; /* Odstęp między obrazkiem a tekstem */
-        margin-bottom: 20px;
+        gap: 50px; /* Odstęp między obrazkiem a tekstem */
+        margin-bottom: 75px;
     }
 
     .user-cover {
-        width: 150px; /* Szerokość okładki */
-        height: auto; /* Automatyczna wysokość */
+        width: 200px; /* Szerokość okładki */
+        height: 200px; /* Automatyczna wysokość */
         border-radius: 5px; /* Zaokrąglenie rogów */
         box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2); /* Cień */
-        margin-right: 50px;
-        margin-bottom: 50px;
+        object-fit: cover;
     }
 
     .user-info {
@@ -47,12 +46,13 @@
         font-size: 16px;
         color: black;
         width: 800px; /* Szerokość ramki */
-        height: 150px; /* Wysokość ramki */
+        height: 300px; /* Wysokość ramki */
         border: 4px dotted #0096FF; /* Czarna ramka */
         border-radius: 10px;
         padding: 10px; /* Wewnętrzny odstęp */
         overflow: auto; /* Włączenie scrolla, gdy tekst jest za długi */
         background-color: #F0F8FF; /* Jasne tło dla lepszej czytelności */
+        text-align: justify;
         margin-bottom: 75px;
     }
 
@@ -81,12 +81,12 @@
         border: none;
     }
 
-        .tab-button.active {
-            font-size: 22px;
-            background: #0096FF;
-            border: none;
-            font-weight: bold;
-        }
+    .tab-button.active {
+        font-size: 22px;
+        background: #0096FF;
+        border: none;
+        font-weight: bold;
+    }
 
     .tab-content {
         border: 1px solid #0096FF;
@@ -100,28 +100,28 @@
         display: none;
     }
 
-        .tab-pane.active {
-            display: block;
-        }
+    .tab-pane.active {
+        display: block;
+    }
 
-    /*     .btn:enabled {
-            background-color: #0096FF;
-            color: #FFFFFF;
-            padding: 10px 30px;
-            font-size: 16px;
-            margin-top: 30px;
-        } */
+    .btn:enabled {
+        background-color: #0096FF;
+        color: #FFFFFF;
+        padding: 10px 30px;
+        font-size: 16px;
+        margin-top: 30px;
+    }
 
 </style>
 
 <div class="user-container">
-    <img src=@Model.ImageLink
-         class="user-cover">
+    <img src="@Url.Content("~/imagesUser/" + Model.ImageLink)" class="user-cover" />
     <div class="user-info">
         <h3 class="username">@Model.UserName</h3>
         <p class="details">@Model.Email</p>
         <p class="details">obserwowani: 8, obserwujący: 1</p>
     </div>
+    <button class="btn" name="btn">Obserwuj</button>
 </div>
 <div>
     <p class="about-me">O sobie</p>

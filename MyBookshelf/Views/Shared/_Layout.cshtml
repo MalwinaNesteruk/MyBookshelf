@@ -14,32 +14,56 @@
             <div class="container-fluid">
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="nav nav-pills">
-                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "nav-link active" : "nav-link")">
-                            <a class="nav-link text-dark" @Html.ActionLink("Strona główna", "Index", "Home", new { area = "" }, new { })</a>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "Home" ? "active" : "")"
+                               asp-controller="Home" asp-action="Index">
+                                Strona główna
+                            </a>
                         </li>
-                        <li class="@(ViewContext.RouteData.Values["Action"].ToString() == "SearchBookForm" || ViewContext.RouteData.Values["Action"].ToString() == "SearchBookBase"
-                        || ViewContext.RouteData.Values["Action"].ToString() == "AdvancedSearchBookForm" || ViewContext.RouteData.Values["Action"].ToString() == "SearchBookAdvanced"
-                        || ViewContext.RouteData.Values["Action"].ToString() == "BookDetails" ? "nav-link active" : "nav-link")">
-                            @Html.ActionLink("Wyszukaj książki", "SearchBookForm", "Book", new { area = "" }, new { @class = "nav-link text-dark" })
+                        <li class="nav-item">
+                            <a class="nav-link text-dark @(new[] { "SearchBookForm", "SearchBookBase", "AdvancedSearchBookForm", "SearchBookAdvanced", "BookDetails" }
+                           .Contains(ViewContext.RouteData.Values["Action"].ToString()) ? "active" : "")"
+                               asp-controller="Book" asp-action="SearchBookForm">
+                                Wyszukaj książki
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "AnotherUser" ? "active" : "")"
+                               asp-controller="AnotherUser" asp-action="ShowAllUsers">
+                                Inni czytelnicy
+                            </a>
                         </li>
                     </ul>
-                    <ul class="nav ms-auto">
+
+                    <ul class="nav ms-auto nav-pills">
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="User" asp-action="ShowMyProfile">@User.Identity.Name</a>
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "User" ? "active" : "")"
+                                   asp-controller="User" asp-action="ShowMyProfile">
+                                    @User.Identity.Name
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Logout">Wyloguj</a>
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "Account" && ViewContext.RouteData.Values["Action"].ToString() == "Logout" ? "active" : "")"
+                                   asp-controller="Account" asp-action="Logout">
+                                    Wyloguj
+                                </a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Login">Zaloguj</a>
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "Account" && ViewContext.RouteData.Values["Action"].ToString() == "Login" ? "active" : "")"
+                                   asp-controller="Account" asp-action="Login">
+                                    Zaloguj
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Register">Rejestracja</a>
+                                <a class="nav-link text-dark @(ViewContext.RouteData.Values["Controller"].ToString() == "Account" && ViewContext.RouteData.Values["Action"].ToString() == "Register" ? "active" : "")"
+                                   asp-controller="Account" asp-action="Register">
+                                    Rejestracja
+                                </a>
                             </li>
                         }
                     </ul>

@@ -19,7 +19,7 @@ namespace MyBookshelf.Controllers
             _googleSearchService = googleSearchService;
         }
 
-        [Authorize]
+        //[Authorize] //tu zdjąć to
         [HttpGet]
         public IActionResult SearchBookForm(ListingResponse listing)
         {
@@ -42,7 +42,7 @@ namespace MyBookshelf.Controllers
             return View("SearchBookForm", response);
         }
 
-        [Authorize]
+        //[Authorize] //tu zdjąć to
         [HttpGet]
         public IActionResult AdvancedSearchBookForm(ListingResponse listing)
         {

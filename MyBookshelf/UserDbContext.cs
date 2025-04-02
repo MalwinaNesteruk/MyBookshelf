@@ -11,8 +11,6 @@ namespace MyBookshelf
 
         }
 
-        //public DbSet<Book> Books { get; set; } // tworzenie tabeli o nazwie Books
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

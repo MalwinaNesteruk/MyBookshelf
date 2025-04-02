@@ -26,15 +26,6 @@ namespace MyBookshelf.Controllers
             }
             var user = userDbContext.Users.First(x => x.UserName == userName);
             return View("UserProfile", user);
-        }        
-        
-        [HttpGet]
-        [Route("User/{userName}")]
-        public IActionResult ShowProfile(string userName)
-        {
-            userName = "pierdzibrzdek";
-            var user = userDbContext.Users.First(x => x.UserName == userName);
-            return View("UserProfile", user);
         }
 
         [HttpPost]

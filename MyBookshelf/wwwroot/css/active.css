@@ -1,0 +1,5 @@
+﻿.nav-link.active {
+    font-weight: bold;
+    color: #ff6600 !important; /* Kolor podświetlenia */
+    border-bottom: 2px solid #ff6600; /* Podkreślenie aktywnej zakładki */
+}
