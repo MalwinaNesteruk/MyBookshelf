@@ -138,6 +138,7 @@
     <button id="loadMore" style="display:@(Model.HasMore ? "block" : "none")">Załaduj więcej</button>
 </div>
 
+
 <script>
     let currentPage = 1;
     const pageSize = 8;
@@ -153,10 +154,14 @@
         errorMessageEl.style.display = "none";
     }
 
-    function loadUsers(reset = false) {
-        const query = document.getElementById("searchInput")?.value?.trim() || "";
+    function loadUsers(reset = false, pageOverride = null, queryOverride = null) {
+        const query = queryOverride !== null
+            ? queryOverride
+            : document.getElementById("searchInput")?.value?.trim() || "";
 
-        fetch(`/AnotherUser/LoadMoreUsers?page=${currentPage}&pageSize=${pageSize}&query=${encodeURIComponent(query)}`)
+        const page = pageOverride !== null ? pageOverride : currentPage;
+
+        return fetch(`/AnotherUser/LoadMoreUsers?page=${page}&pageSize=${pageSize}&query=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(jsonData => {
                 const userContainer = document.getElementById("userContainer");
@@ -165,7 +170,7 @@
                     userContainer.innerHTML = "";
                 }
 
-                if (jsonData.users.length === 0) {
+                if (jsonData.users.length === 0 && page === 1) {
                     showErrorMessage("Brak wyszukań");
                 } else {
                     hideErrorMessage();
@@ -180,6 +185,8 @@
                             <p>${user.userName}</p>
                         `;
                     userCard.addEventListener("click", function () {
+                        sessionStorage.setItem("currentPage", currentPage);
+                        sessionStorage.setItem("query", query);
                         window.location.href = `/AnotherUser/ShowProfile/${user.userName}`;
                     });
 
@@ -187,11 +194,7 @@
                 });
 
                 const loadMoreBtn = document.getElementById("loadMore");
-                if (jsonData.hasMore) {
-                    loadMoreBtn.style.display = "block";
-                } else {
-                    loadMoreBtn.style.display = "none";
-                }
+                loadMoreBtn.style.display = jsonData.hasMore ? "block" : "none";
             })
             .catch(error => {
                 console.error('Błąd przy ładowaniu użytkowników:', error);
@@ -222,16 +225,38 @@
         loadUsers(true);
     });
 
-    // Obsługa Entera
     document.getElementById("searchInput").addEventListener("keyup", function (event) {
         if (event.key === "Enter") {
             document.getElementById("searchButton").click();
         }
     });
 
-    // Inicjalizacja po załadowaniu strony – pokazanie wszystkich użytkowników
     window.onload = function () {
-        loadUsers(true);
+        const savedPage = sessionStorage.getItem("currentPage");
+        const savedQuery = sessionStorage.getItem("query");
+
+        const query = savedQuery || "";
+        const maxPage = savedPage ? parseInt(savedPage) : 1;
+
+        document.getElementById("searchInput").value = query;
+        currentPage = maxPage;
+
+        let pageToLoad = 1;
+
+        function loadNextPage() {
+            if (pageToLoad <= maxPage) {
+                const reset = pageToLoad === 1;
+                loadUsers(reset, pageToLoad, query).then(() => {
+                    pageToLoad++;
+                    loadNextPage();
+                });
+            } else {
+                sessionStorage.removeItem("currentPage");
+                sessionStorage.removeItem("query");
+            }
+        }
+
+        loadNextPage();
     };
 </script>
 
