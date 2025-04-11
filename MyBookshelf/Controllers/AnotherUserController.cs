@@ -19,19 +19,28 @@ namespace MyBookshelf.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowAllUsers(int page = 1, int pageSize = 8)
+        public ActionResult ShowAllUsers(string query = "", int page = 1, int pageSize = 8)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             UserSearchResponse userSearchResponse = new UserSearchResponse();
+            ViewBag.Query = query;
 
-            List<User> users = userDbContext.Users
-                            .Where(u => u.Id != userId)
-                            .Skip((page - 1) * pageSize)
-                            .Take(pageSize + 1)
-                            .ToList();
+            var usersQuery = userDbContext.Users
+                .Where(u => u.Id != userId);
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                usersQuery = usersQuery.Where(u => u.UserName.Contains(query));
+            }
+
+            List<User> users = usersQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize + 1)
+                .ToList();
 
             bool hasMore = users.Count > pageSize;
             users = users.Take(pageSize).ToList();
+
             userSearchResponse.Users = users;
             userSearchResponse.HasMore = hasMore;
 
@@ -42,16 +51,9 @@ namespace MyBookshelf.Controllers
         public IActionResult LoadMoreUsers(int page, int pageSize, string query = "")
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            UserSearchResponse userSearchResponse = new UserSearchResponse();
-            ViewBag.Query = query;
             var usersQuery = userDbContext.Users
                 .Where(u => u.Id != userId);
 
-            if (query is null || query.Count() < 3)
-            {
-                userSearchResponse.ErrorMessage = "Wyszukiwana fraza musi mieć co najmniej 3 znaki.";
-                return View("ShowAllUsers", userSearchResponse);
-            }
             if (!string.IsNullOrEmpty(query))
             {
                 usersQuery = usersQuery.Where(u => u.UserName.Contains(query));
@@ -65,10 +67,14 @@ namespace MyBookshelf.Controllers
             bool hasMore = users.Count > pageSize;
             users = users.Take(pageSize).ToList();
 
-            userSearchResponse.Users = users;
-            userSearchResponse.HasMore = hasMore;
-
-            return Json(userSearchResponse);
+            return Json(new
+            {
+                users = users.Select(u => new {
+                    userName = u.UserName,
+                    imageLink = u.ImageLink
+                }),
+                hasMore = hasMore
+            });
         }
 
         [HttpGet]

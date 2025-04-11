@@ -120,21 +120,13 @@
 <div>
     <div class="form-group">
         <input id="searchInput" class="form-control" name="query" placeholder="Wyszukiwany użytkownik" value="@ViewBag.Query" />
-        <button id="searchButton" class="btn btn-default" type="submit" name="btn">Wyszukaj</button>
+        <button id="searchButton" class="btn btn-default" type="button" name="btn">Wyszukaj</button>
     </div>
 
-    @if (Model.ErrorMessage is not null)
-    {
-        <label class="control-label">@Model.ErrorMessage</label>
-    }
-    @if (Model.Users is not null && Model.Users.Count == 0)
-    {
-        <label class="control-label">Brak wyszukań</label>
-    }
-
+    <div id="errorMessage" style="color: black; display: none;"></div>
 
     <div id="userContainer" class="user-grid">
-        @foreach (var user in Model.Users)
+        @foreach (var user in Model.Users ?? new List<User>())
         {
             <div class="user-card" onclick="window.location='@Url.Action("ShowProfile", "AnotherUser", new { userName = user.UserName })';" style="cursor: pointer;">
                 <img src="@Url.Content("~/imagesUser/" + user.ImageLink)" alt="Zdjęcie profilowe" class="profile-img" />
@@ -143,20 +135,28 @@
         }
     </div>
 
-    @if (Model.HasMore)
-    {
-        <button id="loadMore">Załaduj więcej</button>
-    }
+    <button id="loadMore" style="display:@(Model.HasMore ? "block" : "none")">Załaduj więcej</button>
 </div>
 
 <script>
     let currentPage = 1;
     const pageSize = 8;
 
-    function loadUsers(reset = false) {
-        const query = document.getElementById("searchInput")?.value || "";
+    function showErrorMessage(message) {
+        const errorMessageEl = document.getElementById("errorMessage");
+        errorMessageEl.textContent = message;
+        errorMessageEl.style.display = "block";
+    }
 
-        fetch(/AnotherUser/LoadMoreUsers ? page = ${ currentPage } & pageSize=${ pageSize } & query=${ encodeURIComponent(query) })
+    function hideErrorMessage() {
+        const errorMessageEl = document.getElementById("errorMessage");
+        errorMessageEl.style.display = "none";
+    }
+
+    function loadUsers(reset = false) {
+        const query = document.getElementById("searchInput")?.value?.trim() || "";
+
+        fetch(`/AnotherUser/LoadMoreUsers?page=${currentPage}&pageSize=${pageSize}&query=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(jsonData => {
                 const userContainer = document.getElementById("userContainer");
@@ -165,30 +165,37 @@
                     userContainer.innerHTML = "";
                 }
 
+                if (jsonData.users.length === 0) {
+                    showErrorMessage("Brak wyszukań");
+                } else {
+                    hideErrorMessage();
+                }
+
                 jsonData.users.forEach(user => {
                     const userCard = document.createElement("div");
                     userCard.classList.add("user-card");
                     userCard.style.cursor = "pointer";
-                    userCard.innerHTML =
-                        <img src="/imagesUser/${user.imageLink}" alt = "Zdjęcie profilowe" class="profile-img" />
-                            <p>${ user.userName } </p>
-                        ;
+                    userCard.innerHTML = `
+                            <img src="/imagesUser/${user.imageLink}" alt="Zdjęcie profilowe" class="profile-img"/>
+                            <p>${user.userName}</p>
+                        `;
                     userCard.addEventListener("click", function () {
-                        window.location.href = /AnotherUser/ShowProfile / ${ user.userName };
+                        window.location.href = `/AnotherUser/ShowProfile/${user.userName}`;
                     });
 
                     userContainer.appendChild(userCard);
                 });
 
                 const loadMoreBtn = document.getElementById("loadMore");
-                if (!jsonData.hasMore) {
-                    loadMoreBtn.style.display = "none";
-                } else {
+                if (jsonData.hasMore) {
                     loadMoreBtn.style.display = "block";
+                } else {
+                    loadMoreBtn.style.display = "none";
                 }
             })
             .catch(error => {
                 console.error('Błąd przy ładowaniu użytkowników:', error);
+                showErrorMessage("Wystąpił błąd podczas pobierania danych");
             });
     }
 
@@ -198,11 +205,33 @@
     });
 
     document.getElementById("searchButton").addEventListener("click", function () {
+        const query = document.getElementById("searchInput")?.value?.trim() || "";
+
+        if (query.length === 0) {
+            showErrorMessage("Aby wyszukać użytkownika, należy uzupełnić pole 'Wyszukiwany użytkownik'");
+            return;
+        }
+
+        if (query.length < 3) {
+            showErrorMessage("Wyszukiwana fraza musi mieć co najmniej 3 znaki");
+            return;
+        }
+
+        hideErrorMessage();
         currentPage = 1;
         loadUsers(true);
     });
 
+    // Obsługa Entera
+    document.getElementById("searchInput").addEventListener("keyup", function (event) {
+        if (event.key === "Enter") {
+            document.getElementById("searchButton").click();
+        }
+    });
 
-
+    // Inicjalizacja po załadowaniu strony – pokazanie wszystkich użytkowników
+    window.onload = function () {
+        loadUsers(true);
+    };
 </script>
 
