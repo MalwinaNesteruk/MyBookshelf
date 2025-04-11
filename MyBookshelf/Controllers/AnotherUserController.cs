@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MyBookshelf.Models;
+using Newtonsoft.Json;
 using System.Drawing.Printing;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MyBookshelf.Controllers
 {
@@ -16,23 +18,16 @@ namespace MyBookshelf.Controllers
             this.userDbContext = userDbContext;
         }
 
-        [HttpGet] 
+        [HttpGet]
         public ActionResult ShowAllUsers(int page = 1, int pageSize = 8)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             UserSearchResponse userSearchResponse = new UserSearchResponse();
 
-/*            List<User> users = userDbContext.Users
-            .Where(u => u.Id != userId)
-            .OrderBy(u => u.Id)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();*/
-
             List<User> users = userDbContext.Users
                             .Where(u => u.Id != userId)
                             .Skip((page - 1) * pageSize)
-                            .Take(pageSize + 1) 
+                            .Take(pageSize + 1)
                             .ToList();
 
             bool hasMore = users.Count > pageSize;
@@ -44,18 +39,32 @@ namespace MyBookshelf.Controllers
         }
 
         [HttpGet]
-        public IActionResult LoadMoreUsers(int page, int pageSize)
+        public IActionResult LoadMoreUsers(int page, int pageSize, string query = "")
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             UserSearchResponse userSearchResponse = new UserSearchResponse();
+            ViewBag.Query = query;
+            var usersQuery = userDbContext.Users
+                .Where(u => u.Id != userId);
 
-            var users = userDbContext.Users
-                                .Where(u => u.Id != userId)
-                                .Skip((page - 1) * pageSize)
-                                .Take(pageSize + 1)
-                                .ToList();
+            if (query is null || query.Count() < 3)
+            {
+                userSearchResponse.ErrorMessage = "Wyszukiwana fraza musi mieć co najmniej 3 znaki.";
+                return View("ShowAllUsers", userSearchResponse);
+            }
+            if (!string.IsNullOrEmpty(query))
+            {
+                usersQuery = usersQuery.Where(u => u.UserName.Contains(query));
+            }
+
+            var users = usersQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize + 1)
+                .ToList();
+
             bool hasMore = users.Count > pageSize;
             users = users.Take(pageSize).ToList();
+
             userSearchResponse.Users = users;
             userSearchResponse.HasMore = hasMore;
 
@@ -63,11 +72,11 @@ namespace MyBookshelf.Controllers
         }
 
         [HttpGet]
-        //Route("/{userName}")]
-        public IActionResult ShowProfile()//string userName)
+        [Route("AnotherUser/ShowProfile/{userName}")]
+        public IActionResult ShowProfile(string userName)
         {
-            string userName = "pierdzibrzdek";
             var user = userDbContext.Users.First(x => x.UserName == userName);
+
             return View("AnotherUserProfile", user);
         }
     }

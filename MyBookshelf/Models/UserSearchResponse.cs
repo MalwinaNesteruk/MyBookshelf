@@ -4,5 +4,6 @@
     {
         public List<User> Users { get; set; }
         public bool HasMore { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

@@ -69,15 +69,6 @@
         font-size: 16px;
     }
 
-
-
-
-
-
-
-
-
-
     .user-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -103,7 +94,7 @@
     .profile-img {
         width: 200px;
         height: 200px;
-        border-radius: 5px; /* Zaokrąglenie rogów */
+        border-radius: 5px;
         box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
         margin-bottom: 10px;
     }
@@ -127,18 +118,26 @@
 </style>
 
 <div>
-@*     <form asp-action="SearchBookBase" method="post"> *@
-        <div class="form-group">
-            <input class="form-control" name="query" placeholder="Wyszukiwany użytkownik"/>
-            <button class="btn btn-default" type="submit" name="btn">Wyszukaj</button>
-        </div>
-@*     </form> *@
+    <div class="form-group">
+        <input id="searchInput" class="form-control" name="query" placeholder="Wyszukiwany użytkownik" value="@ViewBag.Query" />
+        <button id="searchButton" class="btn btn-default" type="submit" name="btn">Wyszukaj</button>
+    </div>
+
+    @if (Model.ErrorMessage is not null)
+    {
+        <label class="control-label">@Model.ErrorMessage</label>
+    }
+    @if (Model.Users is not null && Model.Users.Count == 0)
+    {
+        <label class="control-label">Brak wyszukań</label>
+    }
+
 
     <div id="userContainer" class="user-grid">
         @foreach (var user in Model.Users)
         {
-            <div class="user-card">
-                <img src="@Url.Content("~/imagesUser/" + user.ImageLink)" alt="Zdjęcie profilowe" class="profile-img"/>
+            <div class="user-card" onclick="window.location='@Url.Action("ShowProfile", "AnotherUser", new { userName = user.UserName })';" style="cursor: pointer;">
+                <img src="@Url.Content("~/imagesUser/" + user.ImageLink)" alt="Zdjęcie profilowe" class="profile-img" />
                 <p>@user.UserName</p>
             </div>
         }
@@ -150,94 +149,60 @@
     }
 </div>
 
-    <script>
-        let currentPage = 1;
-        const pageSize = 8;
+<script>
+    let currentPage = 1;
+    const pageSize = 8;
 
-        document.getElementById("loadMore").addEventListener("click", function () {
-            currentPage++;
+    function loadUsers(reset = false) {
+        const query = document.getElementById("searchInput")?.value || "";
 
-        fetch(`/AnotherUser/LoadMoreUsers?page=${currentPage}&pageSize=${pageSize}`)
-            .then(response => response.json()) // Oczekujemy JSON-a
+        fetch(/AnotherUser/LoadMoreUsers ? page = ${ currentPage } & pageSize=${ pageSize } & query=${ encodeURIComponent(query) })
+            .then(response => response.json())
             .then(jsonData => {
-                console.log("Odebrane dane:", jsonData);
-
                 const userContainer = document.getElementById("userContainer");
+
+                if (reset) {
+                    userContainer.innerHTML = "";
+                }
+
                 jsonData.users.forEach(user => {
                     const userCard = document.createElement("div");
                     userCard.classList.add("user-card");
-                    userCard.innerHTML = `
-                    <img src="${"/imagesUser/" + user.imageLink}" alt="Zdjęcie profilowe" class="profile-img"/>
-                    <p>${user.userName}</p>
-                `;
+                    userCard.style.cursor = "pointer";
+                    userCard.innerHTML =
+                        <img src="/imagesUser/${user.imageLink}" alt = "Zdjęcie profilowe" class="profile-img" />
+                            <p>${ user.userName } </p>
+                        ;
+                    userCard.addEventListener("click", function () {
+                        window.location.href = /AnotherUser/ShowProfile / ${ user.userName };
+                    });
+
                     userContainer.appendChild(userCard);
                 });
 
+                const loadMoreBtn = document.getElementById("loadMore");
                 if (!jsonData.hasMore) {
-                    document.getElementById("loadMore").style.display = "none";
+                    loadMoreBtn.style.display = "none";
+                } else {
+                    loadMoreBtn.style.display = "block";
                 }
             })
             .catch(error => {
                 console.error('Błąd przy ładowaniu użytkowników:', error);
             });
-        });
+    }
+
+    document.getElementById("loadMore").addEventListener("click", function () {
+        currentPage++;
+        loadUsers();
+    });
+
+    document.getElementById("searchButton").addEventListener("click", function () {
+        currentPage = 1;
+        loadUsers(true);
+    });
 
 
 
 </script>
 
-
-
-
-    @*     @if (Model.errorMessage is not null)
-    {
-        <label class="control-label">@Model.errorMessage</label>
-    }
-
-    @if (Model.books is not null && Model.books.Count == 0)
-    {
-        <label class="control-label">Brak wyszukań</label>
-    }
-    else if (Model.books is not null && Model.books.Count > 0)
-    {
-        <table>
-            <tr>
-                <th style="width: 15%;">Tytuł</th>
-                <th style="width: 15%;">Autorzy</th>
-                <th style="width: 10%;">Data publikacji</th>
-                <th style="width: 10%;">Ilość stron</th>
-                <th style="width: 10%;">Wydawca</th>
-                <th style="width: 10%;">Format</th>
-                <th style="width: 30%;">Opis</th>
-            </tr>
-
-            @foreach (var book in Model.books.Take(10))
-            {
-                <tr onclick="window.location='@Url.Action("BookDetails", "Book", book)';" style="cursor: pointer;">
-                    <td>@book.Title</td>
-                    <td>@book.Authors</td>
-                    <td>@book.PublishedDate</td>
-                    <td>@book.PageCount</td>
-                    <td>@book.Publisher</td>
-                    <td>@book.PrintType</td>
-                    <td>
-                        <div class="scrollable-description">
-                            @book.Description
-                        </div>
-                    </td>
-                </tr>
-            }
-        </table>
-        <form asp-action="SearchBookBase" method="post" class="centered-pagination">
-            <input type="hidden" name="query" value="@ViewBag.Query" />
-            <button type="submit" name="page" value="@(@Model.CurrentPage - 1)" class="btn2 btn-secondary"
-            @(Model.CurrentPage == 1 ? "disabled" : "")>
-                Poprzednia
-            </button>
-            <span>Strona @Model.CurrentPage</span>
-            <button type="submit" name="page" value="@(@Model.CurrentPage + 1)" class="btn2 btn-primary"
-            @(Model.nextBooks.Count == 0 ? "disabled" : "")>
-                Następna
-            </button>
-        </form>
-    } *@
